@@ -21,6 +21,7 @@ class PhotoFile(models.Model):
         related_name='photos',
     )
     file = models.ImageField(upload_to=PHOTO_FILE_DIR)
+    is_original = models.BooleanField(default=True)
     format = models.CharField(
         max_length=max([len(choice[0]) for choice in FORMAT_CHOICES]),
         choices=FORMAT_CHOICES,

@@ -47,6 +47,7 @@ def create_photo(base, sub_path, extensions):
         photo_file = PhotoFile(
             photo=photo,
             format=PhotoFile.EXTENSION_TO_FORMAT_CHOICE[ext.lower()],
+            is_original=False,
         )
         handler = open(path, 'rb')
         photo_file.file.save(base + ext, File(handler), save=True)
