@@ -1,4 +1,9 @@
+from django.conf import settings
+from django.dispatch import receiver
 from django.db import models
+from django.db.models.signals import post_save
+
+from photos.tasks import read_exif_data
 
 
 class PhotoFile(models.Model):
@@ -29,6 +34,13 @@ class PhotoFile(models.Model):
 
     def __str__(self):
         return '{} for {}'.format(self.format, self.photo)
+
+
+@receiver(post_save, sender=PhotoFile)
+def post_save_read_exif_data(sender, instance, **kwargs):
+    base = 'http://10.88.114.33:8000/{}'.format(instance.file.url)
+    read_exif_data.delay(base)
+
 
 
 class Photo(models.Model):

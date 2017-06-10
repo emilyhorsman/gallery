@@ -1,11 +1,12 @@
-import urllib
+from urllib import request
+import shutil
 
 from celery import shared_task
 
 
 @shared_task
 def read_exif_data(uri):
-    image = urllib.URLopener()
-    result = image.retrieve(uri, 'foo.jpg')
+    with request.urlopen(uri) as res, open('foo.jpg', 'wb') as handler:
+        shutil.copyfileobj(res, handler)
     import pdb
     pdb.set_trace()
