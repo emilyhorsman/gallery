@@ -25,7 +25,13 @@ class PhotoFile(models.Model):
     )
 
     def __str__(self):
-        return '{} for {}'.format(self.format, self.photo)
+        return '{}{} for {} ({}x{})'.format(
+            'Original ' if self.is_original else '',
+            self.format,
+            self.photo,
+            self.file.width,
+            self.file.height,
+        )
 
 
 class Photo(models.Model):
