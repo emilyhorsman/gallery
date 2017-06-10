@@ -27,4 +27,5 @@ def post_save_process_image(sender, instance, created, **kwargs):
 
         tasks.read_metadata.s(instance.pk),
         tasks.convert_to_webp.s(name, instance.pk),
+        tasks.convert_to_guetzli.s(name, instance.pk),
     )()
