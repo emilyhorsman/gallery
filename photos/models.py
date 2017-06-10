@@ -1,3 +1,6 @@
+import os
+from urllib.parse import urljoin
+
 from django.conf import settings
 from django.dispatch import receiver
 from django.db import models
@@ -38,8 +41,8 @@ class PhotoFile(models.Model):
 
 @receiver(post_save, sender=PhotoFile)
 def post_save_read_exif_data(sender, instance, **kwargs):
-    base = 'http://10.88.114.33:8000/{}'.format(instance.file.url)
-    read_exif_data.delay(base)
+    url = os.environ.get(BASE_URL, '')
+    read_exif_data.delay(urljoin(url, instance.file.url))
 
 
 
