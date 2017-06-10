@@ -9,11 +9,15 @@ from photos.models import PhotoFile
 
 
 @shared_task
-def read_exif_data(photo_file_pk, url):
+def download_image(photo_file_pk, url):
     _, path = tempfile.mkstemp()
     with request.urlopen(url) as res, open(path, 'wb') as handler:
         shutil.copyfileobj(res, handler)
+    return path
 
+
+@shared_task
+def read_exif_data(path, photo_file_pk):
     exif = dict()
     with Image(filename=path) as image:
         for key, value in image.metadata.items():
@@ -21,3 +25,4 @@ def read_exif_data(photo_file_pk, url):
     photo_file = PhotoFile.objects.get(pk=photo_file_pk)
     photo_file.exif = exif
     photo_file.save()
+    return path
