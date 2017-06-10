@@ -31,11 +31,9 @@ def read_metadata(path, photo_file_pk):
     return path
 
 
-def convert_image(name, photo_file_pk, **kwargs):
+def convert_image(target, name, photo_file_pk, **kwargs):
     source_photo_file = PhotoFile.objects.get(pk=photo_file_pk)
-    _, target = tempfile.mkstemp()
-    params = kwargs['params'] + (target,)
-    subprocess.run(params)
+    subprocess.run(kwargs['params'])
 
     photo_file = PhotoFile(
         photo=source_photo_file.photo,
@@ -55,17 +53,19 @@ def convert_image(name, photo_file_pk, **kwargs):
 
 @shared_task
 def convert_to_webp(source, name, photo_file_pk):
+    _, target = tempfile.mkstemp()
     params = (
         'cwebp',
         '-hint', 'photo',
-        '-q', '60',
+        '-q', '75',
         '-m', '6',
         '-mt',
         '-af',
         source,
-        '-o',
+        '-o', target,
     )
     convert_image(
+        target,
         name,
         photo_file_pk,
         params=params,
@@ -76,13 +76,36 @@ def convert_to_webp(source, name, photo_file_pk):
 
 
 @shared_task
+def convert_with_mozjpeg(source, name, photo_file_pk):
+    _, target = tempfile.mkstemp()
+    params = (
+        'mozcjpeg',
+        '-outfile', target,
+        '-q', '75',
+        source,
+    )
+    convert_image(
+        target,
+        name,
+        photo_file_pk,
+        params=params,
+        format='JPEG',
+        extension='.jpg',
+    )
+    return source
+
+
+@shared_task
 def convert_to_guetzli(source, name, photo_file_pk):
+    _, target = tempfile.mkstemp()
     params = (
         'guetzli',
         '--quality', '84',
         source,
+        target,
     )
     convert_image(
+        target,
         name,
         photo_file_pk,
         params=params,
