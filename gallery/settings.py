@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -122,3 +124,9 @@ STATIC_URL = '/static/'
 
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+# Celery Configuration
+
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', None)
+CELERY_RESULT_BACKEND = 'django-db'
