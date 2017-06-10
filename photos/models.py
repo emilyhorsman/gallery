@@ -5,6 +5,7 @@ from django.db import models
 
 class PhotoFile(models.Model):
     PHOTO_FILE_DIR = 'photos/'
+    USER_UPLOAD_PROCESSOR = 'USER_UPLOAD'
 
     photo = models.ForeignKey(
         'photos.Photo',
@@ -17,6 +18,10 @@ class PhotoFile(models.Model):
         max_length=32,
         null=True,
         blank=True,
+    )
+    processor = models.CharField(
+        max_length=2048,
+        default=USER_UPLOAD_PROCESSOR,
     )
     exif = JSONField(null=True, blank=True)
 

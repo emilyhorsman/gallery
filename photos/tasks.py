@@ -39,6 +39,7 @@ def convert_image(target, name, photo_file_pk, **kwargs):
         photo=source_photo_file.photo,
         format=kwargs['format'],
         is_original=False,
+        processor=' '.join(kwargs['params']),
     )
     # We want to retain the uploaded filename instead of an entirely randomly
     # generated one.
