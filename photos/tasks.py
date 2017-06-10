@@ -32,6 +32,32 @@ def read_metadata(path, photo_file_pk):
     return path
 
 
+@shared_task
+def resize(source, name, extension, width, photo_file_pk):
+    _, target = tempfile.mkstemp()
+    source_photo_file = PhotoFile.objects.get(pk=photo_file_pk)
+    with Image(filename=source) as image:
+        # No cropping.
+        # Resize to width while preserving aspect ratio by not
+        # specifying height.
+        image.transform('', str(width))
+        image.save(filename=target)
+
+        photo_file = PhotoFile(
+            photo=source_photo_file.photo,
+            format=image.format,
+            is_original=False,
+            processor='resize task {}'.format(width),
+        )
+    target_name = source_photo_file.file.storage.get_available_name(name + extension)
+    with open(target, 'rb') as handler:
+        photo_file.file.save(
+            target_name,
+            File(handler),
+            save=True,
+        )
+
+
 def convert_image(target, name, photo_file_pk, **kwargs):
     source_photo_file = PhotoFile.objects.get(pk=photo_file_pk)
     subprocess.run(kwargs['params'])
@@ -74,7 +100,7 @@ def convert_to_webp(source, name, photo_file_pk):
         format='WEBP',
         extension='.webp',
     )
-    return source
+    return target
 
 
 @shared_task
@@ -94,7 +120,7 @@ def convert_with_mozjpeg(source, name, photo_file_pk):
         format='JPEG',
         extension='.jpg',
     )
-    return source
+    return target
 
 
 @shared_task
@@ -114,4 +140,4 @@ def convert_to_guetzli(source, name, photo_file_pk):
         format='JPEG',
         extension='.jpg',
     )
-    return source
+    return target
