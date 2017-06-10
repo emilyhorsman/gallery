@@ -6,7 +6,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 
 from photos.models import PhotoFile
-from photos.tasks import download_image, read_exif_data
+from photos.tasks import download_image, read_metadata
 
 
 @receiver(post_save, sender=PhotoFile)
@@ -21,5 +21,5 @@ def post_save_process_image(sender, instance, created, **kwargs):
             urljoin(url, instance.file.url),
         ),
 
-        read_exif_data.s(instance.pk),
+        read_metadata.s(instance.pk),
     )()

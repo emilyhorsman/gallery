@@ -17,12 +17,13 @@ def download_image(photo_file_pk, url):
 
 
 @shared_task
-def read_exif_data(path, photo_file_pk):
+def read_metadata(path, photo_file_pk):
+    photo_file = PhotoFile.objects.get(pk=photo_file_pk)
     exif = dict()
     with Image(filename=path) as image:
+        photo_file.format = image.format
         for key, value in image.metadata.items():
             exif[key] = value
-    photo_file = PhotoFile.objects.get(pk=photo_file_pk)
     photo_file.exif = exif
     photo_file.save()
     return path
