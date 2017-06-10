@@ -26,7 +26,8 @@ def read_metadata(path, photo_file_pk):
         photo_file.format = image.format
         for key, value in image.metadata.items():
             exif[key] = value
-    photo_file.exif = exif
+    photo_file.photo.exif = exif
+    photo_file.photo.save()
     photo_file.save()
     return path
 

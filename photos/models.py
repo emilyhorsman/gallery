@@ -23,7 +23,6 @@ class PhotoFile(models.Model):
         max_length=2048,
         default=USER_UPLOAD_PROCESSOR,
     )
-    exif = JSONField(null=True, blank=True)
 
     def __str__(self):
         return '{} for {}'.format(self.format, self.photo)
@@ -36,6 +35,7 @@ class Photo(models.Model):
         null=True,
     )
     published = models.BooleanField(default=False)
+    exif = JSONField(null=True, blank=True)
 
     def __str__(self):
         return self.title
