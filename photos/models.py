@@ -6,7 +6,11 @@ from django.db import models
 
 
 def has_webp_support(user_agent):
-    return user_agent['family'] == 'Chrome'
+    return user_agent['family'] in (
+        'Chrome',
+        'Chrome Mobile',
+        'Opera',
+    )
 
 
 class PhotoFile(models.Model):
