@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormView
 from django.shortcuts import redirect
@@ -41,7 +42,7 @@ class PhotoCreateView(FormView):
 
         self.photo = form.save()
         PhotoFile.objects.create(
-            photo=photo,
+            photo=self.photo,
             is_original=True,
             file=form.cleaned_data['file'],
         )
