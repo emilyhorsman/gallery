@@ -3,3 +3,32 @@
 	{{ form.as_p }}
 	<input type="submit" value="Submit" />
 </form>
+
+<script>
+;(function() {
+	window.addEventListener('dragover', function(event) {
+		event.preventDefault();
+	}, false);
+
+	window.addEventListener('drop', function(event) {
+		event.preventDefault();
+
+		var data = new FormData();
+		data.append('file', event.dataTransfer.files[0]);
+		data.append('title', 'Untitled');
+		data.append('csrfmiddlewaretoken', document.querySelector('input[name="csrfmiddlewaretoken"]').value);
+
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', '/photos/create/');
+		xhr.onload = function() {
+			window.location = this.responseURL;
+		}
+
+		xhr.upload.onprogress = function() {
+			console.log('progress', arguments);
+		}
+
+		xhr.send(data);
+	}, true);
+})();
+</script>
