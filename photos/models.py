@@ -1,6 +1,12 @@
+import operator
+
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+
+
+def has_webp_support(user_agent):
+    return user_agent['family'] == 'Chrome'
 
 
 class PhotoFile(models.Model):
@@ -42,6 +48,22 @@ class Photo(models.Model):
     )
     published = models.BooleanField(default=False)
     exif = JSONField(null=True, blank=True)
+
+    def get_srcset(self, user_agent):
+        qs = self.photos.filter(is_original=False)
+        if not has_webp_support(user_agent):
+            qs = qs.exclude(format='WEBP')
+
+        photo_files = sorted(
+            qs,
+            key=operator.attrgetter('file.size'),
+        )
+
+        srcset = [
+            '{} {}w'.format(photo.file.url, photo.file.width)
+            for photo in photo_files
+        ]
+        return ', '.join(srcset)
 
     def __str__(self):
         return self.title

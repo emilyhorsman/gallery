@@ -5,3 +5,4 @@ dj-database-url==0.4.2
 psycopg2==2.7.1
 Pillow==4.1.1
 wand==0.4.4
+ua-parser==0.7.3

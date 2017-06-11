@@ -1,0 +1,15 @@
+<h1>{{ photo.title }}</h1>
+<img
+	src="{{ photo.photos.first.file.url }}"
+	srcset="{{ srcset }}"
+/>
+
+<table>
+	{% for photo in photo.photos.all %}
+	<tr>
+		<td>{{ photo.format }}</td>
+		<td>{{ photo.file.width }}</td>
+		<td>{{ photo.file.size|filesizeformat }}</td>
+	</tr>
+	{% endfor %}
+</table>
