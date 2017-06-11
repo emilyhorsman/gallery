@@ -1,7 +1,10 @@
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import FormView
+from django.shortcuts import redirect
 from ua_parser import user_agent_parser
 
-from photos.models import Photo
+from photos.forms import PhotoForm
+from photos.models import Photo, PhotoFile
 
 
 class PhotoDetailView(DetailView):
@@ -19,3 +22,27 @@ class PhotoDetailView(DetailView):
             user_agent=user_agent_parser.ParseUserAgent(request.META['HTTP_USER_AGENT'])
         )
         return self.render_to_response(context)
+
+
+class PhotoCreateView(FormView):
+    template_name = 'photos/photo_create.html'
+    form_class = PhotoForm
+
+    def get_success_url(self):
+        return reverse(
+            'photo-detail',
+            kwargs=dict(pk=self.photo.pk),
+        )
+
+    def form_valid(self, form):
+        context = self.get_context_data(form=form)
+        if not form.is_valid():
+            return self.form_invalid(form)
+
+        self.photo = form.save()
+        PhotoFile.objects.create(
+            photo=photo,
+            is_original=True,
+            file=form.cleaned_data['file'],
+        )
+        return redirect(self.get_success_url())
