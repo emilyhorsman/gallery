@@ -14,12 +14,13 @@
 		event.preventDefault();
 
 		var data = new FormData();
-		data.append('file', event.dataTransfer.files[0]);
-		data.append('title', 'Untitled');
+		for (var i = 0; i < event.dataTransfer.files.length; i++) {
+			data.append('file', event.dataTransfer.files[i]);
+		}
 		data.append('csrfmiddlewaretoken', document.querySelector('input[name="csrfmiddlewaretoken"]').value);
 
 		var xhr = new XMLHttpRequest();
-		xhr.open('POST', '/photos/create/');
+		xhr.open('POST', '/photos/upload/');
 		xhr.onload = function() {
 			window.location = this.responseURL;
 		}

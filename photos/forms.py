@@ -1,7 +1,7 @@
 from django.db import models
-from django.forms import ModelForm, FileField
+from django.forms import Form, ModelForm, FileField
 
-from photos.models import Photo, PhotoFile
+from photos.models import Photo
 
 
 class PhotoForm(ModelForm):
@@ -11,3 +11,6 @@ class PhotoForm(ModelForm):
         model = Photo
         fields = ['title', 'file']
 
+
+class MultiUploadForm(Form):
+    file = FileField()
