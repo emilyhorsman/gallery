@@ -1,6 +1,7 @@
 celery==4.0.2
 django==1.11.1
 django-celery-results==1.0.1
+django-dotenv==1.4.1
 dj-database-url==0.4.2
 psycopg2==2.7.1
 Pillow==4.1.1
