@@ -10,7 +10,3 @@ class PhotoForm(ModelForm):
     class Meta:
         model = Photo
         fields = ['title', 'file']
-
-
-class MultiUploadForm(Form):
-    file = FileField()

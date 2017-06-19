@@ -1,11 +1,12 @@
 from django.core.urlresolvers import reverse
+from django.http import HttpResponse
 from django.views import View
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormView
 from django.shortcuts import redirect
 from ua_parser import user_agent_parser
 
-from photos.forms import PhotoForm, MultiUploadForm
+from photos.forms import PhotoForm
 from photos.models import Photo, PhotoFile
 
 
@@ -47,26 +48,7 @@ class PhotoCreateView(FormView):
             is_original=True,
             file=form.cleaned_data['file'],
         )
-        return redirect(self.get_success_url())
-
-
-class PhotoMultiUploadView(FormView):
-    template_name = 'photos/photo_create.html'
-    form_class = MultiUploadForm
-
-    def get_success_url(self):
-        return '/admin/photos/photo/'
-
-    def form_valid(self, form):
-        files = self.request.FILES.getlist('file')
-        for file in files:
-            photo = Photo.objects.create(
-                title='Untitled',
-                published=False,
-            )
-            PhotoFile.objects.create(
-                photo=photo,
-                is_original=True,
-                file=file,
-            )
-        return redirect(self.get_success_url())
+        if self.request.is_ajax():
+            return HttpResponse()
+        else:
+            return redirect(self.get_success_url())

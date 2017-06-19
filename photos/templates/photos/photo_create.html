@@ -13,23 +13,30 @@
 	window.addEventListener('drop', function(event) {
 		event.preventDefault();
 
-		var data = new FormData();
+		function prepareFormData(file) {
+			var data = new FormData();
+			data.append('csrfmiddlewaretoken', document.querySelector('input[name="csrfmiddlewaretoken"]').value);
+			data.append('file', file);
+			return data;
+		}
+
 		for (var i = 0; i < event.dataTransfer.files.length; i++) {
-			data.append('file', event.dataTransfer.files[i]);
-		}
-		data.append('csrfmiddlewaretoken', document.querySelector('input[name="csrfmiddlewaretoken"]').value);
+			var data = prepareFormData(event.dataTransfer.files[i]);
+			(function(data, i) {
+				var xhr = new XMLHttpRequest();
+				xhr.open('POST', '/photos/create/');
+				xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+				xhr.onload = function() {
+					//window.location = this.responseURL;
+				}
 
-		var xhr = new XMLHttpRequest();
-		xhr.open('POST', '/photos/upload/');
-		xhr.onload = function() {
-			window.location = this.responseURL;
-		}
+				xhr.upload.onprogress = function() {
+					console.log(i, 'progress', arguments);
+				}
 
-		xhr.upload.onprogress = function() {
-			console.log('progress', arguments);
+				xhr.send(data);
+			})(data, i)
 		}
-
-		xhr.send(data);
 	}, true);
 })();
 </script>
